@@ -38,7 +38,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 Icons.arrow_back,
                 color: Colors.blue,
               )),
-          title: Text('a'),
+          title: Text('b'),
         ),
         body: dataProvider.isLoading
             ? Center(child: CircularProgressIndicator())
