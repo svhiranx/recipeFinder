@@ -49,64 +49,56 @@ class _SearchPageState extends State<SearchPage> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 250,
-                        child: MultiSelectDialogField<Data>(
-                          separateSelectedItems: true,
-                          dialogHeight: height * 0.4,
-                          onConfirm: (values) {
-                            ing = values;
-                            setState(() {
-                              _isTrue = true;
-                            });
-                            Provider.of<Recipes>(context, listen: false)
-                                .getList(ing);
-                          },
-                          searchable: true,
-                          items: [
-                            ...Provider.of<Recipes>(context, listen: true)
-                                .ingredients
-                                .map((e) => MultiSelectItem(e, e.val!))
-                          ],
-                          initialValue: const [],
-                        ),
-                      ),
-                    ],
+          : NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverToBoxAdapter(
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    child: MultiSelectDialogField<Data>(
+                      separateSelectedItems: true,
+                      dialogHeight: height * 0.4,
+                      onConfirm: (values) {
+                        ing = values;
+                        setState(() {
+                          _isTrue = true;
+                        });
+                        Provider.of<Recipes>(context, listen: false)
+                            .getList(ing);
+                      },
+                      searchable: true,
+                      items: [
+                        ...Provider.of<Recipes>(context, listen: true)
+                            .ingredients
+                            .map((e) => MultiSelectItem(e, e.val!))
+                      ],
+                      initialValue: const [],
+                    ),
                   ),
                 ),
-                _isTrue
-                    ? FutureBuilder(
-                        future: Provider.of<Recipes>(context).getReq(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<List<Recipe>> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            if (snapshot.hasData) {
-                              return Expanded(
-                                child: ListView.builder(
-                                  itemBuilder: (context, index) {
-                                    return FinalCarView(
-                                      idx: index,
-                                    );
-                                  },
-                                  itemCount: snapshot.data?.length,
-                                ),
-                              );
-                            }
-                          }
-                          return const Center(
-                            child: CircularProgressIndicator(),
+              ],
+              body: FutureBuilder(
+                future: Provider.of<Recipes>(context).getReq(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Recipe>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return FinalCarView(
+                            key: ValueKey(snapshot.data![index].imgUrl),
+                            idx: index,
                           );
                         },
-                      )
-                    : const Center(),
-              ],
+                        itemCount: snapshot.data?.length,
+                      );
+                    }
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
             ),
     );
   }

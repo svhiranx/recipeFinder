@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../model/recipe.dart';
 import '../model/recipes.dart';
@@ -16,7 +19,7 @@ class _FinalCarViewState extends State<FinalCarView> {
   @override
   Widget build(BuildContext context) {
     List<Recipe> recipe = Provider.of<Recipes>(context).finalIng();
-    print(recipe.length);
+
     return InkWell(
       onTap: () {},
       child: Card(
@@ -24,39 +27,41 @@ class _FinalCarViewState extends State<FinalCarView> {
           borderRadius: BorderRadius.circular(15),
         ),
         elevation: 4,
-        margin: EdgeInsets.all(10),
+        margin: const EdgeInsets.all(15),
         child: Column(
           children: [
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                  ),
-                  child: Image.network(
-                    errorBuilder: (context, error, stackTrace) {
-                      return Text('Your error widget...');
-                    },
-                    recipe[widget.idx].imgUrl,
-                    height: 250,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
+                    ),
+                    child: Container(
+                      height: 200,
+                      width: double.infinity,
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: FadeInImage.memoryNetwork(
+                            placeholder: kTransparentImage,
+                            image: recipe[widget.idx].imgUrl),
+                      ),
+                    )),
                 Positioned(
                   bottom: 10,
                   right: 0,
                   child: Container(
-                    padding: EdgeInsets.symmetric(
+                    decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.all(Radius.circular(2))),
+                    padding: const EdgeInsets.symmetric(
                       vertical: 5,
                       horizontal: 20,
                     ),
                     width: 330,
-                    color: Colors.black54,
                     child: Text(
                       recipe[widget.idx].label,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 26,
                         color: Colors.white,
                       ),
